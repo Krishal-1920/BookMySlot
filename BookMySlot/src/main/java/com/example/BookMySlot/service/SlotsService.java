@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -38,6 +39,7 @@ public class SlotsService {
         slot.setEndTime(end);
         slot.setStatus(Status.AVAILABLE);
         slot.setUser(user);
+        slot.setProviderUsername(user.getUsername());
 
         Slots savedSlots = slotsRepository.save(slot);
 
@@ -48,4 +50,17 @@ public class SlotsService {
         return resultModel;
     }
 
+    public List<SlotsModel> getAllSlots(String search) {
+        List<Slots> slotsList = slotsRepository.searchSlots(search);
+
+        return slotsList.stream()
+                .map(slots -> slotsMapper.slotsToSlotsModel(slots))
+                .toList();
+    }
+
+    public void deleteSlots(String slotId) {
+        Slots slots = slotsRepository.findById(slotId)
+               .orElseThrow(() -> new RuntimeException("Slots Not found"));
+        slotsRepository.delete(slots);
+    }
 }

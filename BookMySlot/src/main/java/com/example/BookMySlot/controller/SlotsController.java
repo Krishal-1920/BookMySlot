@@ -4,10 +4,9 @@ import com.example.BookMySlot.model.SlotsModel;
 import com.example.BookMySlot.service.SlotsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,6 +18,17 @@ public class SlotsController {
     @PostMapping("/makeSlots")
     public ResponseEntity<SlotsModel> makeSlots(@RequestBody SlotsModel slotsModel) {
         return ResponseEntity.ok(slotsService.makeSlots(slotsModel));
+    }
+
+    @GetMapping("/getAllSlots")
+    public ResponseEntity<List<SlotsModel>> getAllSlots(@RequestParam String search){
+        return ResponseEntity.ok(slotsService.getAllSlots(search));
+    }
+
+    @DeleteMapping("/deleteSlots")
+    public ResponseEntity<String> deleteSlots(@RequestParam String slotId){
+        slotsService.deleteSlots(slotId);
+        return ResponseEntity.ok("Slots Deleted");
     }
 
 }

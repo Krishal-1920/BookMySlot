@@ -8,12 +8,12 @@ import java.time.LocalTime;
 
 @Data
 public class SlotsModel {
-    private String slotId;
+
+    private String providerId;
+    private String providerUsername;
     private LocalDate date;
     private LocalTime startTime;
     private LocalTime endTime;
     private Status status;
 
-    private String providerId;
-    private String providerUsername;
 }
