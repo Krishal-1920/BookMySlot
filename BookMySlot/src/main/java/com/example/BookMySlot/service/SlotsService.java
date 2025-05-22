@@ -40,6 +40,12 @@ public class SlotsService {
         slot.setUser(user);
 
         Slots savedSlots = slotsRepository.save(slot);
-        return slotsMapper.slotsToSlotsModel(savedSlots);
+
+        SlotsModel resultModel = slotsMapper.slotsToSlotsModel(savedSlots);
+        resultModel.setProviderId(user.getUserId());
+        resultModel.setProviderUsername(user.getUsername());
+
+        return resultModel;
     }
+
 }
