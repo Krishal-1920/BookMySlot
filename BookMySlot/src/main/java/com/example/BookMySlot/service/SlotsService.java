@@ -31,7 +31,7 @@ public class SlotsService {
 
         User user = userRepository.findById(slotsModel.getProviderId())
                 .orElseThrow(() -> new RuntimeException("User Not found"));
-        
+
         Slots slot = new Slots();
         slot.setDate(date);
         slot.setStartTime(start);
