@@ -23,7 +23,7 @@ public class BookingController {
     }
 
     @GetMapping("/getAllBookings")
-    public ResponseEntity<List<SlotBookingModel>> getslots(){
-        return ResponseEntity.ok(bookingService.getAllBookings());
+    public ResponseEntity<List<SlotBookingModel>> getslots(@RequestParam String search){
+        return ResponseEntity.ok(bookingService.getAllBookings(search));
     }
 }
