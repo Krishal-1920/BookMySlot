@@ -124,6 +124,34 @@ public class BookingService {
 
         return result;
     }
+
+
+    public BookingModel updateBooking(String userId, String slotId) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Slots slot = slotsRepository.findById(slotId)
+                .orElseThrow(() -> new RuntimeException("Slot not found"));
+
+        // Make sure your repository method returns Optional<Booking>
+        Booking booking = bookingRepository.findByUserIdAndSlotId(userId, slotId);
+
+        if (slot.getStatus().equals(Status.BOOKED)) {
+            // Update slot status
+            slot.setStatus(Status.AVAILABLE);
+            slotsRepository.save(slot);
+
+            // Update booking status
+            booking.setStatus(BookingStatus.INACTIVE);
+            bookingRepository.save(booking);
+        } else {
+            throw new RuntimeException("Slot is already available");
+        }
+
+        return bookingMapper.bookingToBookingModel(booking);
+    }
+
 }
 
 
