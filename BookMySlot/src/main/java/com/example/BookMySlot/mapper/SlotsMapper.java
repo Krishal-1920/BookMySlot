@@ -4,6 +4,7 @@ import com.example.BookMySlot.entity.Slots;
 import com.example.BookMySlot.model.SlotsModel;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
 
 @Mapper(componentModel = "spring")
@@ -17,4 +18,5 @@ public interface SlotsMapper {
 
     Slots slotsModelToSlots(SlotsModel slotsModel);
 
+    Slots updateSlotsModel(SlotsModel slotsModel,@MappingTarget Slots slots);
 }

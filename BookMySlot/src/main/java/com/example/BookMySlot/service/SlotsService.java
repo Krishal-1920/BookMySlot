@@ -24,31 +24,49 @@ public class SlotsService {
 
     private final SlotsMapper slotsMapper;
 
-    public SlotsModel makeSlots(SlotsModel slotsModel) {
+    // Manually (Without Map-Struct)
+//    public SlotsModel makeSlots(SlotsModel slotsModel) {
+//
+//        LocalDate date = slotsModel.getDate();
+//        LocalTime start = slotsModel.getStartTime();
+//        LocalTime end = slotsModel.getEndTime();
+//
+//        User user = userRepository.findById(slotsModel.getProviderId())
+//                .orElseThrow(() -> new RuntimeException("User Not found"));
+//
+//        Slots slot = new Slots();
+//        slot.setDate(date);
+//        slot.setStartTime(start);
+//        slot.setEndTime(end);
+//        slot.setStatus(Status.AVAILABLE);
+//        slot.setUser(user);
+//        slot.setProviderUsername(user.getUsername());
+//
+//        Slots savedSlots = slotsRepository.save(slot);
+//
+//        SlotsModel resultModel = slotsMapper.slotsToSlotsModel(savedSlots);
+//        resultModel.setProviderId(user.getUserId());
+//        resultModel.setProviderUsername(user.getUsername());
+//        return resultModel;
+//    }
 
-        LocalDate date = slotsModel.getDate();
-        LocalTime start = slotsModel.getStartTime();
-        LocalTime end = slotsModel.getEndTime();
+    // Using Map-struct
+    public SlotsModel makeSlots(SlotsModel slotsModel) {
 
         User user = userRepository.findById(slotsModel.getProviderId())
                 .orElseThrow(() -> new RuntimeException("User Not found"));
 
-        Slots slot = new Slots();
-        slot.setDate(date);
-        slot.setStartTime(start);
-        slot.setEndTime(end);
-        slot.setStatus(Status.AVAILABLE);
+        Slots slot = slotsMapper.slotsModelToSlots(slotsModel);
+
         slot.setUser(user);
         slot.setProviderUsername(user.getUsername());
+        slot.setStatus(Status.AVAILABLE);
 
-        Slots savedSlots = slotsRepository.save(slot);
+        Slots savedSlot = slotsRepository.save(slot);
 
-        SlotsModel resultModel = slotsMapper.slotsToSlotsModel(savedSlots);
-        resultModel.setProviderId(user.getUserId());
-        resultModel.setProviderUsername(user.getUsername());
-
-        return resultModel;
+        return slotsMapper.slotsToSlotsModel(savedSlot);
     }
+
 
     public List<SlotsModel> getAllSlots(String search) {
         List<Slots> slotsList = slotsRepository.searchSlots(search);
@@ -63,4 +81,26 @@ public class SlotsService {
                .orElseThrow(() -> new RuntimeException("Slots Not found"));
         slotsRepository.delete(slots);
     }
+
+    public SlotsModel updateSlots(String slotId, SlotsModel slotsModel) {
+        Slots slots = slotsRepository.findById(slotId)
+                .orElseThrow(() -> new RuntimeException("Slots Not found"));
+
+        // Update fields using MapStruct
+        slotsMapper.updateSlotsModel(slotsModel, slots);
+
+        // Fetch the user again to set relationships properly
+        User user = userRepository.findById(slotsModel.getProviderId())
+                .orElseThrow(() -> new RuntimeException("User Not found"));
+
+        // Set missing fields
+        slots.setUser(user);
+        slots.setProviderUsername(user.getUsername());
+        slots.setStatus(Status.AVAILABLE); // or slotsModel.getStatus() if updating status
+
+        Slots updatedSlots = slotsRepository.save(slots);
+        return slotsMapper.slotsToSlotsModel(updatedSlots);
+    }
+
+
 }

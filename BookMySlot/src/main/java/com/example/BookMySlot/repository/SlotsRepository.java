@@ -35,7 +35,7 @@ public interface SlotsRepository extends JpaRepository<Slots, String> {
             "  u.user_id LIKE CONCAT('%', :search, '%')" +
             ")",
             nativeQuery = true)
-    List<Slots> search(@Param("search") String search);
+    List<Slots> searches(@Param("search") String search);
 
 
 }

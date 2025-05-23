@@ -31,4 +31,9 @@ public class SlotsController {
         return ResponseEntity.ok("Slots Deleted");
     }
 
+    @PutMapping("/updateSlots/{slotId}")
+    public ResponseEntity<SlotsModel> updateSlots(@PathVariable String slotId,
+                                                  @RequestBody SlotsModel slotsModel){
+        return ResponseEntity.ok(slotsService.updateSlots(slotId, slotsModel));
+    }
 }

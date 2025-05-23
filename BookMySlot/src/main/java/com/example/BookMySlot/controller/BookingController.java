@@ -22,14 +22,15 @@ public class BookingController {
         return ResponseEntity.ok(bookingService.makeAppointmentBooking(userId, slotId));
     }
 
-    @GetMapping("/getAllBookings")
-    public ResponseEntity<List<SlotBookingModel>> getslots(@RequestParam String search){
-        return ResponseEntity.ok(bookingService.getAllBookings(search));
-    }
-
     @PutMapping("/updateBooking/{userId}")
     public ResponseEntity<BookingModel> updateBooking(@PathVariable String userId,
                                                       @RequestParam String slotId) {
         return ResponseEntity.ok(bookingService.updateBooking(userId, slotId));
     }
+
+//    @GetMapping("/getAllBookings")
+//    public ResponseEntity<List<SlotBookingModel>> getslots(@RequestParam String search){
+//        return ResponseEntity.ok(bookingService.getAllBookings(search));
+//    }
+
 }
