@@ -7,7 +7,7 @@ import lombok.Data;
 import java.time.LocalTime;
 
 @Data
-@AllArgsConstructor
+//@AllArgsConstructor
 public class TimeSlotAvailableModel {
 
     private LocalTime startTime;

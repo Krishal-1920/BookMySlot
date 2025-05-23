@@ -20,7 +20,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -61,9 +60,11 @@ public class BookingService {
         return bookingMapper.bookingToBookingModel(booking);
     }
 
+
+
+
     public List<SlotBookingModel> getAllBookings(String search) {
-        // Fetch only available slots that match the search criteria
-        List<Slots> allSlots = slotsRepository.search(search);
+        List<Slots> allSlots = slotsRepository.findAll();
 
         List<SlotBookingModel> result = new ArrayList<>();
 
@@ -123,9 +124,7 @@ public class BookingService {
 
         return result;
     }
-
-    }
-
+}
 
 
 
@@ -146,7 +145,9 @@ public class BookingService {
 
 
 
-//
+
+
+
 //public List<SlotBookingModel> getAllBookings(String search) {
 //    return slotsRepository.search(search).stream()
 //            .collect(Collectors.groupingBy(slot -> slot.getUser().getUserId()))
