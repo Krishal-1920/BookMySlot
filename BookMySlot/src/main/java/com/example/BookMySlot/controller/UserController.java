@@ -1,6 +1,7 @@
 package com.example.BookMySlot.controller;
 
 import com.example.BookMySlot.model.DateAvailableModel;
+import com.example.BookMySlot.model.GetMySlotsModel;
 import com.example.BookMySlot.model.UserModel;
 import com.example.BookMySlot.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -38,5 +39,9 @@ public class UserController {
         return ResponseEntity.ok("User deleted successfully");
     }
 
+    @GetMapping("/getMySlots")
+    public ResponseEntity<List<GetMySlotsModel>> getMySlots(@RequestParam String userId){
+        return ResponseEntity.ok(userService.getMySlots(userId));
+    }
 
 }

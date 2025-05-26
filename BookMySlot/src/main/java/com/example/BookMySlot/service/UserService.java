@@ -1,12 +1,10 @@
 package com.example.BookMySlot.service;
 
 import com.example.BookMySlot.entity.*;
+import com.example.BookMySlot.mapper.BookingMapper;
 import com.example.BookMySlot.mapper.RoleMapper;
 import com.example.BookMySlot.mapper.UserMapper;
-import com.example.BookMySlot.model.DateAvailableModel;
-import com.example.BookMySlot.model.RoleModel;
-import com.example.BookMySlot.model.TimeSlotAvailableModel;
-import com.example.BookMySlot.model.UserModel;
+import com.example.BookMySlot.model.*;
 import com.example.BookMySlot.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +30,8 @@ public class UserService {
     private final SlotsRepository slotsRepository;
 
     private final BookingRepository bookingRepository;
+
+    private final BookingMapper bookingMapper;
 
 
     @Transactional
@@ -177,4 +176,22 @@ public class UserService {
         return updatedUserModel;
     }
 
+    public List<GetMySlotsModel> getMySlots(String userId) {
+
+        User user = userRepository.findById(userId)
+               .orElseThrow(() -> new RuntimeException("User not found"));
+
+        List<Booking> bookings = bookingRepository.findAllByUserUserId(userId);
+
+        return bookings.stream()
+                .map(booking -> {
+                    GetMySlotsModel getMySlotsModel = new GetMySlotsModel();
+                    getMySlotsModel.setDate(booking.getDate());
+                    getMySlotsModel.setStartTime(booking.getSlot().getStartTime());
+                    getMySlotsModel.setEndTime(booking.getSlot().getEndTime());
+                    getMySlotsModel.setProviderUsername(booking.getSlot().getUser().getUsername());
+                    return getMySlotsModel;
+                }).toList();
+
+    }
 }

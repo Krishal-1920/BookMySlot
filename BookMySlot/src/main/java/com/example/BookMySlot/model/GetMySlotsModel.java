@@ -11,6 +11,6 @@ public class GetMySlotsModel {
     private LocalDate date;
     private LocalTime startTime;
     private LocalTime endTime;
-    private String providerName;
+    private String providerUsername;
 
 }
