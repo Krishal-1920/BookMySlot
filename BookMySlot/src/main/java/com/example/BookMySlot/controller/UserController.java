@@ -1,5 +1,6 @@
 package com.example.BookMySlot.controller;
 
+import com.example.BookMySlot.model.DateAvailableModel;
 import com.example.BookMySlot.model.UserModel;
 import com.example.BookMySlot.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -36,4 +37,6 @@ public class UserController {
         userService.deleteUser(userId);
         return ResponseEntity.ok("User deleted successfully");
     }
+
+
 }

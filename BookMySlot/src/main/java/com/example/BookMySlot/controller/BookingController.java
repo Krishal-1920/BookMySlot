@@ -1,13 +1,10 @@
 package com.example.BookMySlot.controller;
 
 import com.example.BookMySlot.model.BookingModel;
-import com.example.BookMySlot.model.SlotBookingModel;
 import com.example.BookMySlot.service.BookingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor

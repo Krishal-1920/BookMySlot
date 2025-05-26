@@ -1,15 +1,13 @@
 package com.example.BookMySlot.service;
 
-import com.example.BookMySlot.entity.Role;
-import com.example.BookMySlot.entity.User;
-import com.example.BookMySlot.entity.UserRole;
+import com.example.BookMySlot.entity.*;
 import com.example.BookMySlot.mapper.RoleMapper;
 import com.example.BookMySlot.mapper.UserMapper;
+import com.example.BookMySlot.model.DateAvailableModel;
 import com.example.BookMySlot.model.RoleModel;
+import com.example.BookMySlot.model.TimeSlotAvailableModel;
 import com.example.BookMySlot.model.UserModel;
-import com.example.BookMySlot.repository.RoleRepository;
-import com.example.BookMySlot.repository.UserRepository;
-import com.example.BookMySlot.repository.UserRoleRepository;
+import com.example.BookMySlot.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +29,11 @@ public class UserService {
     private final RoleRepository roleRepository;
 
     private final RoleMapper roleMapper;
+
+    private final SlotsRepository slotsRepository;
+
+    private final BookingRepository bookingRepository;
+
 
     @Transactional
     public UserModel signUp(UserModel userModel) {
@@ -90,6 +93,7 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
         userRepository.deleteById(userId);
     }
+
 
     @Transactional
     public UserModel updateProfile(String userId, UserModel userModel) {
@@ -172,4 +176,5 @@ public class UserService {
 
         return updatedUserModel;
     }
+
 }

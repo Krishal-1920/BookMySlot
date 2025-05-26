@@ -6,8 +6,8 @@ import com.example.BookMySlot.entity.User;
 import com.example.BookMySlot.enums.BookingStatus;
 import com.example.BookMySlot.enums.Status;
 import com.example.BookMySlot.mapper.BookingMapper;
-import com.example.BookMySlot.model.BookingModel;
-import com.example.BookMySlot.model.SlotBookingModel;
+import com.example.BookMySlot.mapper.SlotsMapper;
+import com.example.BookMySlot.model.*;
 import com.example.BookMySlot.repository.BookingRepository;
 import com.example.BookMySlot.repository.SlotsRepository;
 import com.example.BookMySlot.repository.UserRepository;
@@ -15,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -28,6 +30,8 @@ public class BookingService {
     private final SlotsRepository slotsRepository;
 
     private final UserRepository userRepository;
+
+    private final SlotsMapper slotMapper;
 
 
     public BookingModel makeAppointmentBooking(String userId, String slotId) {
@@ -81,10 +85,8 @@ public class BookingService {
 
         return bookingMapper.bookingToBookingModel(booking);
     }
-
-
+//
 //    public List<SlotBookingModel> getAllBookings(String search) {
-//        List<Slots> slots = slotsRepository.searches(search);
 //
 //    }
 
@@ -111,8 +113,8 @@ public class BookingService {
 
 
 
-// Solution 1
-
+//// Solution 1
+//
 //public List<SlotBookingModel> getAllBookings(String search) {
 //    return slotsRepository.search(search).stream()
 //            .collect(Collectors.groupingBy(slot -> slot.getUser().getUserId()))
@@ -137,16 +139,16 @@ public class BookingService {
 //                return new SlotBookingModel(providerId, providerName, dateModels);
 //            }).toList();
 //}
-
-
-
-
-
-
-
-
-// Solution 2
-
+//
+//
+//
+//
+//
+//
+//
+//
+//// Solution 2
+//
 //public List<SlotBookingModel> getAllBookings(String search) {
 //    List<Slots> allSlots = slotsRepository.findAll();
 //
