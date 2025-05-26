@@ -1,6 +1,8 @@
 package com.example.BookMySlot.service;
 
 import com.example.BookMySlot.entity.*;
+import com.example.BookMySlot.exceptions.DataNotFoundException;
+import com.example.BookMySlot.exceptions.DataValidationException;
 import com.example.BookMySlot.mapper.BookingMapper;
 import com.example.BookMySlot.mapper.RoleMapper;
 import com.example.BookMySlot.mapper.UserMapper;
@@ -36,9 +38,7 @@ public class UserService {
 
     @Transactional
     public UserModel signUp(UserModel userModel) {
-
-        User addUser = userMapper.userModelToUser(userModel); // Converted to User Entity
-
+        User addUser = userMapper.userModelToUser(userModel);
         // Save user to get ID
         addUser = userRepository.save(addUser);
 
@@ -60,7 +60,9 @@ public class UserService {
             }
         }
 
-        if(!invalidRoles.isEmpty()){throw new IllegalArgumentException("Invalid role ID: " + invalidRoles + ". Allowed role IDs are 1, 2, and 3.");}
+        if(!invalidRoles.isEmpty()) {
+            throw new DataValidationException("Invalid role ID: " + invalidRoles + ". Allowed role IDs are 1, 2, and 3.");
+        }
 
         // Filter Valid Roles
         List<Role> saveRoles = roleInDb.stream().filter(r -> roleIdsFromModel.contains(r.getRoleId())).toList();
@@ -89,7 +91,7 @@ public class UserService {
 
     public void deleteUser(String userId) {
         userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new DataNotFoundException("User not found"));
         userRepository.deleteById(userId);
     }
 
@@ -98,7 +100,7 @@ public class UserService {
     public UserModel updateProfile(String userId, UserModel userModel) {
 
         User existingUser = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException());
+                .orElseThrow(() -> new DataNotFoundException("User Not Found"));
         userMapper.updateUserModel(userModel, existingUser);
         existingUser.setUserId(userId);
 
@@ -150,7 +152,7 @@ public class UserService {
         }
 
         if (!invalidRoleIds.isEmpty()) {
-            throw new RuntimeException("Invalid Roles" + invalidRoleIds);
+            throw new DataValidationException("Invalid Roles" + invalidRoleIds);
         }
 
         List<Role> updatedRoles = roleInDb.stream().filter(rd -> nonAllocateRoleIds.contains(rd.getRoleId())).toList();
@@ -179,7 +181,7 @@ public class UserService {
     public List<GetMySlotsModel> getMySlots(String userId) {
 
         User user = userRepository.findById(userId)
-               .orElseThrow(() -> new RuntimeException("User not found"));
+               .orElseThrow(() -> new DataNotFoundException("User not found"));
 
         List<Booking> bookings = bookingRepository.findAllByUserUserId(userId);
 

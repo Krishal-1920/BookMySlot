@@ -3,6 +3,7 @@ package com.example.BookMySlot.service;
 import com.example.BookMySlot.entity.Slots;
 import com.example.BookMySlot.entity.User;
 import com.example.BookMySlot.enums.Status;
+import com.example.BookMySlot.exceptions.DataNotFoundException;
 import com.example.BookMySlot.mapper.SlotsMapper;
 import com.example.BookMySlot.model.SlotsModel;
 import com.example.BookMySlot.repository.SlotsRepository;
@@ -32,7 +33,7 @@ public class SlotsService {
 //        LocalTime end = slotsModel.getEndTime();
 //
 //        User user = userRepository.findById(slotsModel.getProviderId())
-//                .orElseThrow(() -> new RuntimeException("User Not found"));
+//                .orElseThrow(() -> new DataNotFoundException("User Not found"));
 //
 //        Slots slot = new Slots();
 //        slot.setDate(date);
@@ -54,7 +55,7 @@ public class SlotsService {
     public SlotsModel makeSlots(SlotsModel slotsModel) {
 
         User user = userRepository.findById(slotsModel.getProviderId())
-                .orElseThrow(() -> new RuntimeException("User Not found"));
+                .orElseThrow(() -> new DataNotFoundException("User Not found"));
 
         Slots slot = slotsMapper.slotsModelToSlots(slotsModel);
 
@@ -78,25 +79,25 @@ public class SlotsService {
 
     public void deleteSlots(String slotId) {
         Slots slots = slotsRepository.findById(slotId)
-               .orElseThrow(() -> new RuntimeException("Slots Not found"));
+               .orElseThrow(() -> new DataNotFoundException("Slots Not found"));
         slotsRepository.delete(slots);
     }
 
     public SlotsModel updateSlots(String slotId, SlotsModel slotsModel) {
         Slots slots = slotsRepository.findById(slotId)
-                .orElseThrow(() -> new RuntimeException("Slots Not found"));
+                .orElseThrow(() -> new DataNotFoundException("Slots Not found"));
 
         // Update fields using MapStruct
         slotsMapper.updateSlotsModel(slotsModel, slots);
 
         // Fetch the user again to set relationships properly
         User user = userRepository.findById(slotsModel.getProviderId())
-                .orElseThrow(() -> new RuntimeException("User Not found"));
+                .orElseThrow(() -> new DataNotFoundException("User Not found"));
 
         // Set missing fields
         slots.setUser(user);
         slots.setProviderUsername(user.getUsername());
-        slots.setStatus(Status.AVAILABLE); // or slotsModel.getStatus() if updating status
+        slots.setStatus(Status.AVAILABLE);
 
         Slots updatedSlots = slotsRepository.save(slots);
         return slotsMapper.slotsToSlotsModel(updatedSlots);

@@ -5,6 +5,8 @@ import com.example.BookMySlot.entity.Slots;
 import com.example.BookMySlot.entity.User;
 import com.example.BookMySlot.enums.BookingStatus;
 import com.example.BookMySlot.enums.Status;
+import com.example.BookMySlot.exceptions.DataNotFoundException;
+import com.example.BookMySlot.exceptions.DataValidationException;
 import com.example.BookMySlot.mapper.BookingMapper;
 import com.example.BookMySlot.mapper.SlotsMapper;
 import com.example.BookMySlot.model.BookingModel;
@@ -33,13 +35,13 @@ public class BookingService {
     public BookingModel makeAppointmentBooking(String userId, String slotId) {
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new DataNotFoundException("User not found"));
 
         Slots slots = slotsRepository.findById(slotId)
-                .orElseThrow(() -> new RuntimeException("Slot not found"));
+                .orElseThrow(() -> new DataNotFoundException("Slot not found"));
 
         if (slots.getStatus() == Status.BOOKED) {
-            throw new RuntimeException("Slot is already booked");
+            throw new DataValidationException("Slot is already booked");
         }
 
         slots.setStatus(Status.BOOKED);
@@ -59,13 +61,13 @@ public class BookingService {
     public BookingModel updateBooking(String userId, String slotId) {
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User Not Found"));
+                .orElseThrow(() -> new DataNotFoundException("User Not Found"));
 
         Slots slots = slotsRepository.findById(slotId)
-                .orElseThrow(() -> new RuntimeException("Slot Not Found"));
+                .orElseThrow(() -> new DataNotFoundException("Slot Not Found"));
 
         if (slots.getStatus() != Status.BOOKED) {
-            throw new RuntimeException("Slot is not currently booked");
+            throw new DataValidationException("Slot is not currently booked");
         }
 
         slots.setStatus(Status.AVAILABLE);
@@ -73,7 +75,7 @@ public class BookingService {
 
         Booking booking = bookingRepository.findByUserUserIdAndSlotSlotId(userId, slotId);
         if (booking == null) {
-            throw new RuntimeException("Booking not found for the given user and slot");
+            throw new DataValidationException("Booking not found for the given user and slot");
         }
 
         booking.setStatus(BookingStatus.INACTIVE);
