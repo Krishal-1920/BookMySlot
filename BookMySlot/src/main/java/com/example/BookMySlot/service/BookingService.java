@@ -7,17 +7,13 @@ import com.example.BookMySlot.enums.BookingStatus;
 import com.example.BookMySlot.enums.Status;
 import com.example.BookMySlot.mapper.BookingMapper;
 import com.example.BookMySlot.mapper.SlotsMapper;
-import com.example.BookMySlot.model.*;
+import com.example.BookMySlot.model.BookingModel;
 import com.example.BookMySlot.repository.BookingRepository;
 import com.example.BookMySlot.repository.SlotsRepository;
 import com.example.BookMySlot.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -39,20 +35,19 @@ public class BookingService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        Slots slot = slotsRepository.findById(slotId)
+        Slots slots = slotsRepository.findById(slotId)
                 .orElseThrow(() -> new RuntimeException("Slot not found"));
 
-        if("BOOKED".equals(slot.getStatus())){
+        if (slots.getStatus() == Status.BOOKED) {
             throw new RuntimeException("Slot is already booked");
         }
 
-        slot.setStatus(Status.BOOKED);
-        slotsRepository.save(slot);
+        slots.setStatus(Status.BOOKED);
+        slotsRepository.save(slots);
 
         Booking booking = new Booking();
-        booking.setUserId(userId);
-        booking.setSlotId(slotId);
-        booking.setDate(LocalDate.now());
+        booking.setUser(user);
+        booking.setSlot(slots);
         booking.setStatus(BookingStatus.ACTIVE);
 
         bookingRepository.save(booking);
@@ -60,35 +55,32 @@ public class BookingService {
         return bookingMapper.bookingToBookingModel(booking);
     }
 
+
     public BookingModel updateBooking(String userId, String slotId) {
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("User Not Found"));
 
-        Slots slot = slotsRepository.findById(slotId)
-                .orElseThrow(() -> new RuntimeException("Slot not found"));
+        Slots slots = slotsRepository.findById(slotId)
+                .orElseThrow(() -> new RuntimeException("Slot Not Found"));
 
-        // Make sure your repository method returns Optional<Booking>
-        Booking booking = bookingRepository.findByUserIdAndSlotId(userId, slotId);
-
-        if (slot.getStatus().equals(Status.BOOKED)) {
-            // Update slot status
-            slot.setStatus(Status.AVAILABLE);
-            slotsRepository.save(slot);
-
-            // Update booking status
-            booking.setStatus(BookingStatus.INACTIVE);
-            bookingRepository.save(booking);
-        } else {
-            throw new RuntimeException("Slot is already available");
+        if (slots.getStatus() != Status.BOOKED) {
+            throw new RuntimeException("Slot is not currently booked");
         }
+
+        slots.setStatus(Status.AVAILABLE);
+        slotsRepository.save(slots);
+
+        Booking booking = bookingRepository.findByUserUserIdAndSlotSlotId(userId, slotId);
+        if (booking == null) {
+            throw new RuntimeException("Booking not found for the given user and slot");
+        }
+
+        booking.setStatus(BookingStatus.INACTIVE);
+        bookingRepository.save(booking);
 
         return bookingMapper.bookingToBookingModel(booking);
     }
-//
-//    public List<SlotBookingModel> getAllBookings(String search) {
-//
-//    }
 
 }
 

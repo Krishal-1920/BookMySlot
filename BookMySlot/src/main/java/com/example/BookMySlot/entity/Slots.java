@@ -6,6 +6,7 @@ import lombok.Data;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 @Entity
 @Table(name = "slots")
@@ -37,4 +38,7 @@ public class Slots {
 
     @Column(name = "provider_username")
     private String providerUsername;
+
+    @OneToMany(mappedBy = "slot")
+    private List<Booking> bookings;
 }

@@ -48,4 +48,6 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<UserRole> userRoles;
 
+    @OneToMany(mappedBy = "user")
+    private List<Booking> bookings;
 }

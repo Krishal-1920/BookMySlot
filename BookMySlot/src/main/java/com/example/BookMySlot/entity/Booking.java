@@ -1,12 +1,10 @@
 package com.example.BookMySlot.entity;
 
 import com.example.BookMySlot.enums.BookingStatus;
-import com.example.BookMySlot.enums.Status;
 import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 
 @Entity
 @Table(name = "bookings")
@@ -18,11 +16,13 @@ public class Booking {
     @Column(name = "booking_id", updatable = false, nullable = false)
     private String bookingId;
 
-    @Column(name = "user_id")
-    private String userId;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
-    @Column(name = "slot_id")
-    private String slotId;
+    @ManyToOne
+    @JoinColumn(name = "slot_id")
+    private Slots slot;
 
     @Column(name = "date")
     private LocalDate date;
