@@ -1,11 +1,15 @@
 package com.example.BookMySlot.mapper;
 
 import com.example.BookMySlot.entity.Slots;
+import com.example.BookMySlot.model.DateAvailableModel;
 import com.example.BookMySlot.model.SlotsModel;
+import com.example.BookMySlot.model.TimeSlotAvailableModel;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
+
+import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface SlotsMapper {
@@ -19,4 +23,8 @@ public interface SlotsMapper {
     Slots slotsModelToSlots(SlotsModel slotsModel);
 
     Slots updateSlotsModel(SlotsModel slotsModel,@MappingTarget Slots slots);
+
+    DateAvailableModel slotsToDateAvailableModel(Slots slots);
+
+    TimeSlotAvailableModel slotsToTimeAvailableModel(Slots slots);
 }

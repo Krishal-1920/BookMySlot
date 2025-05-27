@@ -10,8 +10,10 @@ import java.time.LocalTime;
 //@AllArgsConstructor
 public class TimeSlotAvailableModel {
 
+    private String providerUsername;
     private LocalTime startTime;
     private LocalTime endTime;
     private Status status;
+
 
 }

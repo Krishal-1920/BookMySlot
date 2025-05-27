@@ -1,6 +1,7 @@
 package com.example.BookMySlot.repository;
 
 import com.example.BookMySlot.entity.Booking;
+import com.example.BookMySlot.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,4 +13,6 @@ public interface BookingRepository extends JpaRepository<Booking, String> {
     Booking findByUserUserIdAndSlotSlotId(String userId, String slotId);
 
     List<Booking> findAllByUserUserId(String userId);
+
+    List<Booking> findByUserUserId(User user);
 }

@@ -31,7 +31,6 @@ public class Slots {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-
     @ManyToOne
     @JoinColumn(name = "provider_id", nullable = false)
     private User user;

@@ -1,6 +1,7 @@
 package com.example.BookMySlot.repository;
 
 import com.example.BookMySlot.entity.Slots;
+import com.example.BookMySlot.enums.Status;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -38,4 +39,7 @@ public interface SlotsRepository extends JpaRepository<Slots, String> {
             nativeQuery = true)
     List<Slots> searches(@Param("search") String search);
 
+    List<Slots> findByStatusIn(List<Status> status);
+
+    List<Slots> findByDateAndStatus(LocalDate date, Status status);
 }

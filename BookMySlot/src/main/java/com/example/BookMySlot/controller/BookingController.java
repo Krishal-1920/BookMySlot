@@ -1,10 +1,13 @@
 package com.example.BookMySlot.controller;
 
 import com.example.BookMySlot.model.BookingModel;
+import com.example.BookMySlot.model.DateAvailableModel;
 import com.example.BookMySlot.service.BookingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,6 +26,11 @@ public class BookingController {
     public ResponseEntity<BookingModel> updateBooking(@PathVariable String userId,
                                                       @RequestParam String slotId) {
         return ResponseEntity.ok(bookingService.updateBooking(userId, slotId));
+    }
+
+    @GetMapping("/getAllBookings")
+    public ResponseEntity<List<DateAvailableModel>> getAllBookings() {
+        return ResponseEntity.ok(bookingService.getAllBookings());
     }
 
 }
