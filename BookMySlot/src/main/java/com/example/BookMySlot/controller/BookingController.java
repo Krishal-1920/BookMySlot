@@ -1,7 +1,7 @@
 package com.example.BookMySlot.controller;
 
 import com.example.BookMySlot.model.BookingModel;
-import com.example.BookMySlot.model.DateAvailableModel;
+import com.example.BookMySlot.model.SlotBookingModel;
 import com.example.BookMySlot.service.BookingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -29,8 +29,8 @@ public class BookingController {
     }
 
     @GetMapping("/getAllBookings")
-    public ResponseEntity<List<DateAvailableModel>> getAllBookings() {
-        return ResponseEntity.ok(bookingService.getAllBookings());
+    public ResponseEntity<List<SlotBookingModel>> getAllBookings(@RequestParam(required = false) String providerId) {
+        return ResponseEntity.ok(bookingService.getAllBookings(providerId));
     }
 
 }

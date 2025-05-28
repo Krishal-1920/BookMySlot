@@ -2,6 +2,7 @@ package com.example.BookMySlot.mapper;
 
 import com.example.BookMySlot.entity.Slots;
 import com.example.BookMySlot.model.DateAvailableModel;
+import com.example.BookMySlot.model.SlotBookingModel;
 import com.example.BookMySlot.model.SlotsModel;
 import com.example.BookMySlot.model.TimeSlotAvailableModel;
 import org.mapstruct.Mapper;
@@ -27,4 +28,6 @@ public interface SlotsMapper {
     DateAvailableModel slotsToDateAvailableModel(Slots slots);
 
     TimeSlotAvailableModel slotsToTimeAvailableModel(Slots slots);
+
+    SlotBookingModel slotsToSlotBookingModel(Slots slots);
 }

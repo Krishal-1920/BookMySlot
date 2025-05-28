@@ -29,17 +29,11 @@ public interface SlotsRepository extends JpaRepository<Slots, String> {
 
     List<Slots> findAll();
 
-    @Query(value = "SELECT s.* FROM slots s " +
-            "JOIN users u ON s.provider_id = u.user_id " +
-            "WHERE s.status = 'AVAILABLE' AND (" +
-            "  :search IS NULL OR " +
-            "  LOWER(u.username) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
-            "  u.user_id LIKE CONCAT('%', :search, '%')" +
-            ")",
-            nativeQuery = true)
-    List<Slots> searches(@Param("search") String search);
-
     List<Slots> findByStatusIn(List<Status> status);
 
     List<Slots> findByDateAndStatus(LocalDate date, Status status);
+
+//    List<Slots> findBySlotId(String slotId);
+
+    List<Slots> findByUserUserId(String providerId);
 }

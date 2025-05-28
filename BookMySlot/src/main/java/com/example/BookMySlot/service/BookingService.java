@@ -11,6 +11,7 @@ import com.example.BookMySlot.mapper.BookingMapper;
 import com.example.BookMySlot.mapper.SlotsMapper;
 import com.example.BookMySlot.model.BookingModel;
 import com.example.BookMySlot.model.DateAvailableModel;
+import com.example.BookMySlot.model.SlotBookingModel;
 import com.example.BookMySlot.model.TimeSlotAvailableModel;
 import com.example.BookMySlot.repository.BookingRepository;
 import com.example.BookMySlot.repository.SlotsRepository;
@@ -19,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -91,44 +93,62 @@ public class BookingService {
         return bookingMapper.bookingToBookingModel(booking);
     }
 
-    public List<DateAvailableModel> getAllBookings() {
-        List<Status> status = List.of(Status.AVAILABLE, Status.BOOKED);
 
-        // Fetch all available slots once
-        List<Slots> availableSlots = slotsRepository.findByStatusIn(status);
+    //// Solution Till Date and Time
+    public List<SlotBookingModel> getAllBookings(String userId) {
+        List<User> providers;
 
-        // Group slots by date to avoid duplicates
-        Map<LocalDate, List<Slots>> slotsByDate = availableSlots.stream()
-                .collect(Collectors.groupingBy(Slots::getDate));
+        // 1. Determine if we filter by userId or get all
+        if (userId != null && !userId.isEmpty()) {
+            User user = userRepository.findById(userId).orElseThrow(()
+                    -> new DataNotFoundException("Provider Not Found"));
 
-        // Convert grouped slots into the desired model
-        List<DateAvailableModel> dateAvailableModels = slotsByDate.entrySet().stream()
-                .map(entry -> {
-                    LocalDate date = entry.getKey();
-                    List<Slots> slotsForDate = entry.getValue();
+            providers = List.of(user);
+        } else {
+            providers = userRepository.findAll(); // Load all providers
+        }
 
-                    // Create DateAvailableModel and set the date
-                    DateAvailableModel dateAvailableModel = new DateAvailableModel();
-                    dateAvailableModel.setDate(date);
+        // 2. Loop through each provider and build SlotBookingModel
+        List<SlotBookingModel> result = new ArrayList<>();
 
-                    // Map each slot to TimeSlotAvailableModel
-                    List<TimeSlotAvailableModel> timeSlotAvailableModels = slotsForDate.stream()
-                            .map(slot -> {
-                                TimeSlotAvailableModel timeModel = new TimeSlotAvailableModel();
-                                timeModel.setProviderUsername(slot.getProviderUsername());
-                                timeModel.setStartTime(slot.getStartTime());
-                                timeModel.setEndTime(slot.getEndTime());
-                                timeModel.setStatus(slot.getStatus());
-                                return timeModel;
-                            })
-                            .collect(Collectors.toList());
+        for (User provider : providers) {
+            List<Slots> providerSlots = slotsRepository.findByUserUserId(provider.getUserId());
 
-                    dateAvailableModel.setTimes(timeSlotAvailableModels);
-                    return dateAvailableModel;
-                })
-                .collect(Collectors.toList());
+            Map<LocalDate, List<Slots>> slotsByDate = providerSlots.stream()
+                    .collect(Collectors.groupingBy(Slots::getDate));
 
-        return dateAvailableModels;
+            List<DateAvailableModel> dateAvailableModels = slotsByDate.entrySet().stream()
+                    .map(entry -> {
+                        LocalDate date = entry.getKey();
+                        List<Slots> slotsForDate = entry.getValue();
+
+                        List<TimeSlotAvailableModel> timeSlotAvailableModels = slotsForDate.stream()
+                                .map(slot -> {
+                                    TimeSlotAvailableModel timeModel = new TimeSlotAvailableModel();
+                                    timeModel.setStartTime(slot.getStartTime());
+                                    timeModel.setEndTime(slot.getEndTime());
+                                    timeModel.setStatus(slot.getStatus());
+                                    return timeModel;
+                                })
+                                .collect(Collectors.toList());
+
+                        DateAvailableModel dateAvailableModel = new DateAvailableModel();
+                        dateAvailableModel.setDate(date);
+                        dateAvailableModel.setTimes(timeSlotAvailableModels);
+
+                        return dateAvailableModel;
+                    })
+                    .collect(Collectors.toList());
+
+            SlotBookingModel model = new SlotBookingModel();
+            model.setProviderId(provider.getUserId());
+            model.setProviderName(provider.getUsername()); // Adjust if your field is different
+            model.setDates(dateAvailableModels);
+
+            result.add(model);
+        }
+
+        return result;
     }
 
 }
