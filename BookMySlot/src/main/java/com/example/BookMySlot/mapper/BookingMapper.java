@@ -13,8 +13,8 @@ public interface BookingMapper {
 
     Booking bookingModelToBooking(BookingModel bookingModel);
 
-    @Mapping(source = "user.userId", target = "userId")
-    @Mapping(source = "slot.slotId", target = "slotId")
+//    @Mapping(source = "user.userId", target = "userId")
+//    @Mapping(source = "slot.slotId", target = "slotId")
     BookingModel bookingToBookingModel(Booking booking);
 
 }

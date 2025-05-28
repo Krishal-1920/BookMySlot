@@ -68,10 +68,8 @@ public class BookingService {
 
 
     public BookingModel updateBooking(String userId, String slotId) {
-
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new DataNotFoundException("User Not Found"));
-
         Slots slots = slotsRepository.findById(slotId)
                 .orElseThrow(() -> new DataNotFoundException("Slot Not Found"));
 
@@ -87,7 +85,7 @@ public class BookingService {
             throw new DataValidationException("Booking not found for the given user and slot");
         }
 
-        booking.setStatus(BookingStatus.CANCEL_BOOKING);
+        booking.setStatus(BookingStatus.CANCELLED_BOOKING);
         bookingRepository.save(booking);
 
         return bookingMapper.bookingToBookingModel(booking);
@@ -112,7 +110,7 @@ public class BookingService {
             List<Slots> providerSlots = slotsRepository.findByUserUserId(provider.getUserId());
 
             Map<LocalDate, List<Slots>> slotsByDate = providerSlots.stream()
-                    .collect(Collectors.groupingBy(Slots::getDate));
+                    .collect(Collectors.groupingBy(Slots-> Slots.getDate()));
 
             List<DateAvailableModel> dateAvailableModels = slotsByDate.entrySet().stream()
                     .map(entry -> {

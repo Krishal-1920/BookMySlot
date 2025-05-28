@@ -85,8 +85,15 @@ public class UserService {
 
 
     public List<UserModel> getAllUsers(String search) {
-        List<User> userList = userRepository.searchUsers(search);
-        return userList.stream().map(users -> userMapper.userToUserModel(users)).toList();
+        List<User> usersList = userRepository.searchUsers(search);
+        List<UserModel> userModelList = usersList.stream().map(user -> {
+            UserModel userModel = userMapper.userToUserModel(user);
+            List<UserRole> userRoles = userRoleRepository.findByUserUserId(user.getUserId());
+            List<RoleModel> roleModelList = userRoles.stream().map(r -> roleMapper.roleToRoleModel(r.getRole())).toList();
+            userModel.setRoles(roleModelList);
+            return userModel;
+        }).toList();
+        return userModelList;
     }
 
 
