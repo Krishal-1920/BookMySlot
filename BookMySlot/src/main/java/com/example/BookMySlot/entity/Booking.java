@@ -16,6 +16,8 @@ public class Booking {
     @Column(name = "booking_id", updatable = false, nullable = false)
     private String bookingId;
 
+    // Mapping
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;

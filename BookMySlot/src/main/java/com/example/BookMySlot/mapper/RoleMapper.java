@@ -12,6 +12,4 @@ public interface RoleMapper {
 
     RoleModel roleToRoleModel(Role role);
 
-    Role roleModelToRole(RoleModel roleModel);
-
 }

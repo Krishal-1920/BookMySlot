@@ -11,8 +11,6 @@ import com.example.BookMySlot.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -77,11 +75,13 @@ public class SlotsService {
                 .toList();
     }
 
+
     public void deleteSlots(String slotId) {
         Slots slots = slotsRepository.findById(slotId)
                .orElseThrow(() -> new DataNotFoundException("Slots Not found"));
         slotsRepository.delete(slots);
     }
+
 
     public SlotsModel updateSlots(String slotId, SlotsModel slotsModel) {
         Slots slots = slotsRepository.findById(slotId)
@@ -102,6 +102,5 @@ public class SlotsService {
         Slots updatedSlots = slotsRepository.save(slots);
         return slotsMapper.slotsToSlotsModel(updatedSlots);
     }
-
 
 }

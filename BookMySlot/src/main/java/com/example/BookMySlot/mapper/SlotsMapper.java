@@ -25,9 +25,4 @@ public interface SlotsMapper {
 
     Slots updateSlotsModel(SlotsModel slotsModel,@MappingTarget Slots slots);
 
-    DateAvailableModel slotsToDateAvailableModel(Slots slots);
-
-    TimeSlotAvailableModel slotsToTimeAvailableModel(Slots slots);
-
-    SlotBookingModel slotsToSlotBookingModel(Slots slots);
 }

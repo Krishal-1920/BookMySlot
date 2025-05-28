@@ -50,7 +50,6 @@ public class UserService {
 
         // Extract Roles Id that exists in Database
         List<String> roleIdsInDb = roleInDb.stream().map(r -> r.getRoleId()).toList();
-
         List<String> invalidRoles = new ArrayList<>();
 
         // Checking for invalid Roles
@@ -84,10 +83,12 @@ public class UserService {
         return userModelToReturn;
     }
 
+
     public List<UserModel> getAllUsers(String search) {
         List<User> userList = userRepository.searchUsers(search);
         return userList.stream().map(users -> userMapper.userToUserModel(users)).toList();
     }
+
 
     public void deleteUser(String userId) {
         userRepository.findById(userId)
@@ -117,14 +118,12 @@ public class UserService {
                 .toList();
 
         // Fetch Existing Roles from user Database
-
         List<UserRole> existingRoles = userRoleRepository.findByUserUserId((userId));
         List<String> existingRoleIds = existingRoles.stream()
                 .map(r -> r.getRole().getRoleId())
                 .toList();
 
         // Determine Roles To Remove
-
         List<String> removeRoleIds = new ArrayList<>();
 
         for(String roleId : existingRoleIds){
@@ -178,6 +177,7 @@ public class UserService {
         return updatedUserModel;
     }
 
+
     public List<GetMySlotsModel> getMySlots(String userId) {
 
         User user = userRepository.findById(userId)
@@ -194,6 +194,5 @@ public class UserService {
                     getMySlotsModel.setProviderUsername(booking.getSlot().getUser().getUsername());
                     return getMySlotsModel;
                 }).toList();
-
     }
 }

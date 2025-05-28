@@ -45,6 +45,8 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Slots> slots;
 
+    // Mapping
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<UserRole> userRoles;
 

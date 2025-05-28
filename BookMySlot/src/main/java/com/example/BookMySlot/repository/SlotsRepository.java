@@ -26,14 +26,7 @@ public interface SlotsRepository extends JpaRepository<Slots, String> {
             nativeQuery = true)
     List<Slots> searchSlots(@Param("search") String search);
 
-
     List<Slots> findAll();
-
-    List<Slots> findByStatusIn(List<Status> status);
-
-    List<Slots> findByDateAndStatus(LocalDate date, Status status);
-
-//    List<Slots> findBySlotId(String slotId);
 
     List<Slots> findByUserUserId(String providerId);
 }

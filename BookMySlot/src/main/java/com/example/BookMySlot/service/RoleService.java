@@ -20,4 +20,5 @@ public class RoleService {
         return roleRepository.findAll().stream()
                 .map(role -> roleMapper.roleToRoleModel(role)).toList();
     }
+
 }

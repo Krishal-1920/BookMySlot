@@ -94,21 +94,18 @@ public class BookingService {
     }
 
 
-    //// Solution Till Date and Time
     public List<SlotBookingModel> getAllBookings(String userId) {
         List<User> providers;
 
-        // 1. Determine if we filter by userId or get all
         if (userId != null && !userId.isEmpty()) {
             User user = userRepository.findById(userId).orElseThrow(()
                     -> new DataNotFoundException("Provider Not Found"));
 
             providers = List.of(user);
         } else {
-            providers = userRepository.findAll(); // Load all providers
+            providers = userRepository.findAll();
         }
 
-        // 2. Loop through each provider and build SlotBookingModel
         List<SlotBookingModel> result = new ArrayList<>();
 
         for (User provider : providers) {
@@ -142,12 +139,11 @@ public class BookingService {
 
             SlotBookingModel model = new SlotBookingModel();
             model.setProviderId(provider.getUserId());
-            model.setProviderName(provider.getUsername()); // Adjust if your field is different
+            model.setProviderName(provider.getUsername());
             model.setDates(dateAvailableModels);
 
             result.add(model);
         }
-
         return result;
     }
 

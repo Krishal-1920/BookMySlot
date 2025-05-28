@@ -36,4 +36,5 @@ public class SlotsController {
                                                   @RequestBody SlotsModel slotsModel){
         return ResponseEntity.ok(slotsService.updateSlots(slotId, slotsModel));
     }
+
 }
