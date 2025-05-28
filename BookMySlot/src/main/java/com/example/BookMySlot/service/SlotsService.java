@@ -23,33 +23,7 @@ public class SlotsService {
 
     private final SlotsMapper slotsMapper;
 
-    // Manually (Without Map-Struct)
-//    public SlotsModel makeSlots(SlotsModel slotsModel) {
-//
-//        LocalDate date = slotsModel.getDate();
-//        LocalTime start = slotsModel.getStartTime();
-//        LocalTime end = slotsModel.getEndTime();
-//
-//        User user = userRepository.findById(slotsModel.getProviderId())
-//                .orElseThrow(() -> new DataNotFoundException("User Not found"));
-//
-//        Slots slot = new Slots();
-//        slot.setDate(date);
-//        slot.setStartTime(start);
-//        slot.setEndTime(end);
-//        slot.setStatus(Status.AVAILABLE);
-//        slot.setUser(user);
-//        slot.setProviderUsername(user.getUsername());
-//
-//        Slots savedSlots = slotsRepository.save(slot);
-//
-//        SlotsModel resultModel = slotsMapper.slotsToSlotsModel(savedSlots);
-//        resultModel.setProviderId(user.getUserId());
-//        resultModel.setProviderUsername(user.getUsername());
-//        return resultModel;
-//    }
 
-    // Using Map-struct
     public SlotsModel makeSlots(SlotsModel slotsModel) {
 
         User user = userRepository.findById(slotsModel.getProviderId())
