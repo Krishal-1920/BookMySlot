@@ -195,7 +195,7 @@ public class UserService {
         return bookings.stream()
                 .map(booking -> {
                     GetMySlotsModel getMySlotsModel = new GetMySlotsModel();
-                    getMySlotsModel.setDate(booking.getDate());
+                    getMySlotsModel.setDate(booking.getSlot().getDate());
                     getMySlotsModel.setStartTime(booking.getSlot().getStartTime());
                     getMySlotsModel.setEndTime(booking.getSlot().getEndTime());
                     getMySlotsModel.setProviderUsername(booking.getSlot().getUser().getUsername());

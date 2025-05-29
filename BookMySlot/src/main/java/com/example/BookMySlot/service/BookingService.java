@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-
 @Service
 @RequiredArgsConstructor
 public class BookingService {
@@ -37,9 +36,6 @@ public class BookingService {
     private final SlotsRepository slotsRepository;
 
     private final UserRepository userRepository;
-
-    private final SlotsMapper slotMapper;
-
 
     public BookingModel makeAppointmentBooking(String userId, String slotId) {
 
@@ -96,8 +92,8 @@ public class BookingService {
         List<User> providers;
 
         if (userId != null && !userId.isEmpty()) {
-            User user = userRepository.findById(userId).orElseThrow(()
-                    -> new DataNotFoundException("Provider Not Found"));
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new DataNotFoundException("Provider Not Found"));
 
             providers = List.of(user);
         } else {
