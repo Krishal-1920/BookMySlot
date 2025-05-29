@@ -22,4 +22,5 @@ public interface UserRepository extends JpaRepository<User, String> {
             nativeQuery = true)
     List<User> searchUsers(@Param("search") String search);
 
+    User findByEmail(String email);
 }

@@ -2,9 +2,15 @@ package com.example.BookMySlot.controller;
 
 import com.example.BookMySlot.model.GetMySlotsModel;
 import com.example.BookMySlot.model.UserModel;
+import com.example.BookMySlot.service.CustomUserDetailsService;
 import com.example.BookMySlot.service.UserService;
+import com.example.BookMySlot.utils.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,6 +21,12 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+
+    private final AuthenticationManager authenticationManager;
+
+    private final CustomUserDetailsService userDetailsService;
+
+    private final JwtUtil jwtUtil;
 
     @PostMapping("/signUp")
     public ResponseEntity<UserModel> signUp(@RequestBody UserModel userModel){
@@ -41,6 +53,21 @@ public class UserController {
     @GetMapping("/getMySlots")
     public ResponseEntity<List<GetMySlotsModel>> getMySlots(@RequestParam String userId){
         return ResponseEntity.ok(userService.getMySlots(userId));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody UserModel userModel) {
+        try {
+            // Wrap email and password into UsernamePasswordAuthenticationToken
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(userModel.getEmail(), userModel.getPassword()));
+
+            UserDetails userDetails = userDetailsService.loadUserByUsername(userModel.getEmail());
+            String jwt = jwtUtil.generateToken(userDetails.getUsername());
+            return ResponseEntity.ok(jwt);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Incorrect Email or Password");
+        }
     }
 
 }

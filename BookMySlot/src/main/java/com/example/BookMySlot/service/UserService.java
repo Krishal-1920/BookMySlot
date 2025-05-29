@@ -9,6 +9,7 @@ import com.example.BookMySlot.mapper.UserMapper;
 import com.example.BookMySlot.model.*;
 import com.example.BookMySlot.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,16 +30,14 @@ public class UserService {
 
     private final RoleMapper roleMapper;
 
-    private final SlotsRepository slotsRepository;
-
     private final BookingRepository bookingRepository;
 
-    private final BookingMapper bookingMapper;
-
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public UserModel signUp(UserModel userModel) {
         User addUser = userMapper.userModelToUser(userModel);
+        addUser.setPassword(passwordEncoder.encode(userModel.getPassword()));
         // Save user to get ID
         addUser = userRepository.save(addUser);
 
