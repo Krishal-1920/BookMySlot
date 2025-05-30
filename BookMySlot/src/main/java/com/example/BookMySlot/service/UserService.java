@@ -184,12 +184,11 @@ public class UserService {
     }
 
 
-    public List<GetMySlotsModel> getMySlots(String userId) {
+    public List<GetMySlotsModel> getMySlots(String email) {
 
-        User user = userRepository.findById(userId)
-               .orElseThrow(() -> new DataNotFoundException("User not found"));
+        User user = userRepository.findByEmail(email);
 
-        List<Booking> bookings = bookingRepository.findAllByUserUserId(userId);
+        List<Booking> bookings = bookingRepository.findAllByUserUserId(user.getUserId());
 
         return bookings.stream()
                 .map(booking -> {
