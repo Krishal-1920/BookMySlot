@@ -26,17 +26,12 @@ public class SpringSecurity {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-
                         .requestMatchers("/user/signUp", "/user/login").permitAll()
 
-                        // Admin-only endpoints
-                        .requestMatchers("/admin/**").hasRole("ADMIN") // ROLE_ADMIN
+                        .requestMatchers("/user/getUser", "/slots/makeSlots", "/slots/updateSlots/**", "/slots/deleteSlots").hasRole("ADMIN")
 
-                        // User-only endpoints
-                        .requestMatchers("/user/**").hasRole("USER") // ROLE_USER
-
-                        // Authenticated (either role)
-                        .requestMatchers("/users/viewProfiles", "/users/updateProfile", "/users/deleteProfile").authenticated()
+                        .requestMatchers("/user/updateProfile", "/user/deleteUser", "/user/getMySlots").authenticated()
+                        .requestMatchers("/slots/getAllSlots", "/bookings/**").authenticated()
 
                         .anyRequest().authenticated()
                 )

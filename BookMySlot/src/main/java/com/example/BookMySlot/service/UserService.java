@@ -96,21 +96,21 @@ public class UserService {
     }
 
 
-    public void deleteUser(String userId) {
-        userRepository.findById(userId)
-                .orElseThrow(() -> new DataNotFoundException("User not found"));
-        userRepository.deleteById(userId);
+    public void deleteUser(String email) {
+        User byEmail = userRepository.findByEmail(email);
+        userRepository.delete(byEmail);
     }
 
 
     @Transactional
-    public UserModel updateProfile(String userId, UserModel userModel) {
+    public UserModel updateProfile(String email, UserModel userModel) {
 
-        User existingUser = userRepository.findById(userId)
-                .orElseThrow(() -> new DataNotFoundException("User Not Found"));
+        User existingUser = userRepository.findByEmail(email);
         userMapper.updateUserModel(userModel, existingUser);
-        existingUser.setUserId(userId);
 
+        existingUser.setUserId(email);
+
+        existingUser.setPassword(passwordEncoder.encode(userModel.getPassword()));
         User savedUser = userRepository.save(existingUser);
 
         // Fetching Role Id
@@ -124,7 +124,7 @@ public class UserService {
                 .toList();
 
         // Fetch Existing Roles from user Database
-        List<UserRole> existingRoles = userRoleRepository.findByUserUserId((userId));
+        List<UserRole> existingRoles = userRoleRepository.findByUserUserId((email));
         List<String> existingRoleIds = existingRoles.stream()
                 .map(r -> r.getRole().getRoleId())
                 .toList();
@@ -139,7 +139,7 @@ public class UserService {
         }
 
         if(!removeRoleIds.isEmpty()){
-            userRoleRepository.deleteByRoleRoleIdInAndUserUserId(removeRoleIds, userId);
+            userRoleRepository.deleteByRoleRoleIdInAndUserUserId(removeRoleIds, email);
         }
 
         // Roles To Add
@@ -172,7 +172,7 @@ public class UserService {
         UserModel updatedUserModel = userMapper.userToUserModel(savedUser);
 
         // Updated List
-        List<UserRole> updatedUserRoles = userRoleRepository.findByUserUserId(userId);
+        List<UserRole> updatedUserRoles = userRoleRepository.findByUserUserId(email);
 
         List<RoleModel> updatedRoleModels = updatedUserRoles.stream()
                 .map(userRole -> roleMapper.roleToRoleModel(userRole.getRole()))

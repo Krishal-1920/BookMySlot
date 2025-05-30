@@ -1,7 +1,11 @@
 package com.example.BookMySlot.controller;
 
+import com.example.BookMySlot.entity.User;
+import com.example.BookMySlot.entity.UserRole;
 import com.example.BookMySlot.model.GetMySlotsModel;
 import com.example.BookMySlot.model.UserModel;
+import com.example.BookMySlot.repository.UserRepository;
+import com.example.BookMySlot.repository.UserRoleRepository;
 import com.example.BookMySlot.service.CustomUserDetailsService;
 import com.example.BookMySlot.service.UserService;
 import com.example.BookMySlot.utils.JwtUtil;
@@ -28,6 +32,10 @@ public class UserController {
 
     private final JwtUtil jwtUtil;
 
+    private final UserRepository userRepository;
+
+    private final UserRoleRepository userRoleRepository;
+
     @PostMapping("/signUp")
     public ResponseEntity<UserModel> signUp(@RequestBody UserModel userModel){
         return ResponseEntity.ok(userService.signUp(userModel));
@@ -39,31 +47,38 @@ public class UserController {
     }
 
     @PutMapping("/updateProfile")
-    public ResponseEntity<UserModel> updateProfile(@RequestParam String userId,
+    public ResponseEntity<UserModel> updateProfile(@RequestHeader("Authorization") String tokenHeader,
                                                    @RequestBody UserModel userModel){
-        return ResponseEntity.ok(userService.updateProfile(userId, userModel));
+        String authenticatedEmail = jwtUtil.extractUsername(tokenHeader);
+        return ResponseEntity.ok(userService.updateProfile(authenticatedEmail, userModel));
     }
 
     @DeleteMapping("/deleteUser")
-    public ResponseEntity<String> deleteUser(@RequestParam String userId){
-        userService.deleteUser(userId);
+    public ResponseEntity<String> deleteUser(@RequestHeader("Authorization") String tokenHeader){
+        String authenticatedEmail = jwtUtil.extractUsername(tokenHeader);
+        userService.deleteUser(authenticatedEmail);
         return ResponseEntity.ok("User deleted successfully");
     }
 
     @GetMapping("/getMySlots")
-    public ResponseEntity<List<GetMySlotsModel>> getMySlots(@RequestParam String userId){
-        return ResponseEntity.ok(userService.getMySlots(userId));
+    public ResponseEntity<List<GetMySlotsModel>> getMySlots(@RequestHeader("Authorization") String tokenHeader){
+        String authenticatedEmail = jwtUtil.extractUsername(tokenHeader);
+        return ResponseEntity.ok(userService.getMySlots(authenticatedEmail));
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody UserModel userModel) {
         try {
-            // Wrap email and password into UsernamePasswordAuthenticationToken
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(userModel.getEmail(), userModel.getPassword()));
 
-            UserDetails userDetails = userDetailsService.loadUserByUsername(userModel.getEmail());
-            String jwt = jwtUtil.generateToken(userDetails.getUsername());
+            User user = userRepository.findByEmail(userModel.getEmail());
+            List<UserRole> roles = userRoleRepository.findByUserUserId(user.getUserId());
+            List<String> roleNames = roles.stream()
+                    .map(role -> role.getRole().getRoleName())
+                    .toList();
+
+            String jwt = jwtUtil.generateToken(user.getEmail(), roleNames);
             return ResponseEntity.ok(jwt);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Incorrect Email or Password");

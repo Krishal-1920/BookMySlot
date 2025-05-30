@@ -34,30 +34,34 @@ public class JwtFilter extends OncePerRequestFilter {
         final String authHeader = request.getHeader("Authorization");
         String email = null;
         String jwt = null;
+
         try {
-            if (authHeader != null && authHeader.startsWith("")) {
-                jwt = authHeader.substring(0);
+
+            if (authHeader != null && !authHeader.isEmpty()) {
+                jwt = authHeader; // Accept raw token
                 email = jwtUtil.extractUsername(jwt);
             }
+
 
             if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
                 if (jwtUtil.validateToken(jwt)) {
                     UsernamePasswordAuthenticationToken authToken =
-                            new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                            new UsernamePasswordAuthenticationToken(
+                                    userDetails, null, userDetails.getAuthorities()
+                            );
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             }
 
             filterChain.doFilter(request, response);
-        }
-        catch(io.jsonwebtoken.ExpiredJwtException e){
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401
+        } catch (io.jsonwebtoken.ExpiredJwtException e) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().write("Token has expired");
         } catch (io.jsonwebtoken.SignatureException | io.jsonwebtoken.MalformedJwtException e) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().write("Invalid token");
         }
     }
