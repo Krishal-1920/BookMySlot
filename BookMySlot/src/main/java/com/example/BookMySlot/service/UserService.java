@@ -113,67 +113,73 @@ public class UserService {
         existingUser.setPassword(passwordEncoder.encode(userModel.getPassword()));
         User savedUser = userRepository.save(existingUser);
 
-        // Fetching Role Id
-        List<String> incomingRoleIdsFromModel = userModel.getRoles().stream().map(u -> u.getRoleId()).distinct().toList();
-
-        // Roles From Db
-        List<Role> roleInDb = roleRepository.findAllByRoleIdIn(incomingRoleIdsFromModel);
-
-        List<String> roleIdsInDb = roleInDb.stream()
-                .map(r -> r.getRoleId())
+        // Fetching Role Ids from incoming model
+        List<String> incomingRoleIdsFromModel = userModel.getRoles().stream()
+                .map(u -> u.getRoleId())
+                .distinct()
                 .toList();
 
-        // Fetch Existing Roles from user Database
-        List<UserRole> existingRoles = userRoleRepository.findByUserUserId((email));
+        // Fetch valid Roles from DB
+        List<Role> roleInDb = roleRepository.findAllByRoleIdIn(incomingRoleIdsFromModel);
+        List<String> roleIdsInDb = roleInDb.stream()
+                .map(Role::getRoleId)
+                .toList();
+
+        // Fetch existing roles from UserRole table
+        List<UserRole> existingRoles = userRoleRepository.findByUserUserId(savedUser.getUserId());
         List<String> existingRoleIds = existingRoles.stream()
                 .map(r -> r.getRole().getRoleId())
                 .toList();
 
-        // Determine Roles To Remove
+        // Determine roles to remove (existing but not in incoming)
         List<String> removeRoleIds = new ArrayList<>();
-
-        for(String roleId : existingRoleIds){
-            if(!incomingRoleIdsFromModel.contains(roleId)){
+        for (String roleId : existingRoleIds) {
+            if (!incomingRoleIdsFromModel.contains(roleId)) {
                 removeRoleIds.add(roleId);
             }
         }
 
-        if(!removeRoleIds.isEmpty()){
-            userRoleRepository.deleteByRoleRoleIdInAndUserUserId(removeRoleIds, email);
+        if (!removeRoleIds.isEmpty()) {
+            userRoleRepository.deleteByRoleRoleIdInAndUserUserId(removeRoleIds, savedUser.getUserId());
         }
 
-        // Roles To Add
-        List<String> nonAllocateRoleIds = incomingRoleIdsFromModel.stream()
-                .filter(roleId -> !existingRoleIds.contains(roleId))  // Compare incoming IDs against existing ones
-                .toList();  // Collect all matching roleIds into a list
+        // Determine new roles to add (in incoming but not already existing)
+        List<String> nonAllocatedRoleIds = incomingRoleIdsFromModel.stream()
+                .filter(roleId -> !existingRoleIds.contains(roleId))
+                .toList();
 
+        // Validate new roles
         List<String> invalidRoleIds = new ArrayList<>();
-        if (!nonAllocateRoleIds.isEmpty()) {
-            for(String roleId : nonAllocateRoleIds) {
-                if(!roleIdsInDb.contains(roleId)) {
-                    invalidRoleIds.add(roleId);
-                }
+        for (String roleId : nonAllocatedRoleIds) {
+            if (!roleIdsInDb.contains(roleId)) {
+                invalidRoleIds.add(roleId);
             }
         }
 
         if (!invalidRoleIds.isEmpty()) {
-            throw new DataValidationException("Invalid Roles" + invalidRoleIds);
+            throw new DataValidationException("Invalid Roles: " + invalidRoleIds);
         }
 
-        List<Role> updatedRoles = roleInDb.stream().filter(rd -> nonAllocateRoleIds.contains(rd.getRoleId())).toList();
+        // Save only new roles to UserRole table
+        List<Role> updatedRoles = roleInDb.stream()
+                .filter(rd -> nonAllocatedRoleIds.contains(rd.getRoleId()))
+                .toList();
 
         for (Role role : updatedRoles) {
-            UserRole updatedUser = new UserRole();
-            updatedUser.setUser(savedUser);
-            updatedUser.setRole(role);
-            userRoleRepository.save(updatedUser);
+            // Skip adding if already exists
+            if (existingRoleIds.contains(role.getRoleId())) continue;
+
+            UserRole updatedUserRole = new UserRole();
+            updatedUserRole.setUser(savedUser);
+            updatedUserRole.setRole(role);
+            userRoleRepository.save(updatedUserRole);
         }
 
+        // Map to UserModel for response
         UserModel updatedUserModel = userMapper.userToUserModel(savedUser);
 
-        // Updated List
-        List<UserRole> updatedUserRoles = userRoleRepository.findByUserUserId(email);
-
+        // Fetch updated roles using userId (not email)
+        List<UserRole> updatedUserRoles = userRoleRepository.findByUserUserId(savedUser.getUserId());
         List<RoleModel> updatedRoleModels = updatedUserRoles.stream()
                 .map(userRole -> roleMapper.roleToRoleModel(userRole.getRole()))
                 .toList();
@@ -182,6 +188,7 @@ public class UserService {
 
         return updatedUserModel;
     }
+
 
 
     public List<GetMySlotsModel> getMySlots(String email) {
