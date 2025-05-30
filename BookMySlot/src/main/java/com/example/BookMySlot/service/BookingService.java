@@ -37,10 +37,9 @@ public class BookingService {
 
     private final UserRepository userRepository;
 
-    public BookingModel makeAppointmentBooking(String userId, String slotId) {
+    public BookingModel makeAppointmentBooking(String email, String slotId) {
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new DataNotFoundException("User not found"));
+        User user = userRepository.findByEmail(email);
 
         Slots slots = slotsRepository.findById(slotId)
                 .orElseThrow(() -> new DataNotFoundException("Slot not found"));
@@ -63,9 +62,8 @@ public class BookingService {
     }
 
 
-    public BookingModel updateBooking(String userId, String slotId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new DataNotFoundException("User Not Found"));
+    public BookingModel updateBooking(String email, String slotId) {
+        User user = userRepository.findByEmail(email);
         Slots slots = slotsRepository.findById(slotId)
                 .orElseThrow(() -> new DataNotFoundException("Slot Not Found"));
 
@@ -76,7 +74,7 @@ public class BookingService {
         slots.setStatus(Status.AVAILABLE);
         slotsRepository.save(slots);
 
-        Booking booking = bookingRepository.findByUserUserIdAndSlotSlotId(userId, slotId);
+        Booking booking = bookingRepository.findByUserUserIdAndSlotSlotId(user.getUserId(), slotId);
         if (booking == null) {
             throw new DataValidationException("Booking not found for the given user and slot");
         }

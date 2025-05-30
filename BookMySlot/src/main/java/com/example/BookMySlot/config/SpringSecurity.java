@@ -27,12 +27,10 @@ public class SpringSecurity {
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/user/signUp", "/user/login").permitAll()
-
                         .requestMatchers("/user/getUser", "/slots/makeSlots", "/slots/updateSlots/**", "/slots/deleteSlots").hasRole("ADMIN")
-
                         .requestMatchers("/user/updateProfile", "/user/deleteUser", "/user/getMySlots").authenticated()
-                        .requestMatchers("/slots/getAllSlots", "/bookings/**").authenticated()
-
+                        .requestMatchers("/slots/getAllSlots", "/bookings/appointmentBooking").authenticated()
+                        .requestMatchers("/bookings/updateBooking", "/bookings/getAllBookings").authenticated()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

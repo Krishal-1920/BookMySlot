@@ -108,7 +108,7 @@ public class UserService {
         User existingUser = userRepository.findByEmail(email);
         userMapper.updateUserModel(userModel, existingUser);
 
-        existingUser.setUserId(email);
+        existingUser.setUserId(existingUser.getUserId());
 
         existingUser.setPassword(passwordEncoder.encode(userModel.getPassword()));
         User savedUser = userRepository.save(existingUser);
