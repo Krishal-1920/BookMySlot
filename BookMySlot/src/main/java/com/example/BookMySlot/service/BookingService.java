@@ -90,14 +90,11 @@ public class BookingService {
 
         if (userId != null && !userId.isEmpty()) {
             slots = slotsRepository.findByUserUserId(userId);
-            if (slots.isEmpty()) {
-                return new ArrayList<>();
-            }
         } else {
             slots = slotsRepository.findAll();
-            if (slots.isEmpty()) {
-                return new ArrayList<>();
-            }
+        }
+        if (slots.isEmpty()) {
+            return new ArrayList<>();
         }
 
         Map<User, List<Slots>> slotsByProvider = slots.stream()
