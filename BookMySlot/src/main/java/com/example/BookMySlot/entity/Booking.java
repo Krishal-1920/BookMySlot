@@ -17,7 +17,6 @@ public class Booking {
     private String bookingId;
 
     // Mapping
-
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
@@ -37,4 +36,5 @@ public class Booking {
     protected void prePersist() {
         this.date = LocalDate.now();
     }
+
 }

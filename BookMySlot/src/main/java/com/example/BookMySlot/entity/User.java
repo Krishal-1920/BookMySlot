@@ -46,10 +46,10 @@ public class User {
     private List<Slots> slots;
 
     // Mapping
-
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<UserRole> userRoles;
 
     @OneToMany(mappedBy = "user")
     private List<Booking> bookings;
+
 }

@@ -14,9 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -27,8 +25,6 @@ public class UserController {
     private final UserService userService;
 
     private final AuthenticationManager authenticationManager;
-
-    private final CustomUserDetailsService userDetailsService;
 
     private final JwtUtil jwtUtil;
 

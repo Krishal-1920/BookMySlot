@@ -1,9 +1,7 @@
 package com.example.BookMySlot.service;
 
 import com.example.BookMySlot.entity.*;
-import com.example.BookMySlot.exceptions.DataNotFoundException;
 import com.example.BookMySlot.exceptions.DataValidationException;
-import com.example.BookMySlot.mapper.BookingMapper;
 import com.example.BookMySlot.mapper.RoleMapper;
 import com.example.BookMySlot.mapper.UserMapper;
 import com.example.BookMySlot.model.*;
@@ -34,6 +32,7 @@ public class UserService {
 
     private final PasswordEncoder passwordEncoder;
 
+
     @Transactional
     public UserModel signUp(UserModel userModel) {
         User addUser = userMapper.userModelToUser(userModel);
@@ -59,7 +58,7 @@ public class UserService {
         }
 
         if(!invalidRoles.isEmpty()) {
-            throw new DataValidationException("Invalid role ID: " + invalidRoles + ". Allowed role IDs are 1, 2, and 3.");
+            throw new DataValidationException("Invalid role ID: " + invalidRoles + ". Allowed role IDs are 1 and 2");
         }
 
         // Filter Valid Roles
@@ -109,7 +108,6 @@ public class UserService {
         userMapper.updateUserModel(userModel, existingUser);
 
         existingUser.setUserId(existingUser.getUserId());
-
         existingUser.setPassword(passwordEncoder.encode(userModel.getPassword()));
         User savedUser = userRepository.save(existingUser);
 
@@ -190,7 +188,6 @@ public class UserService {
     }
 
 
-
     public List<GetMySlotsModel> getMySlots(String email) {
 
         User user = userRepository.findByEmail(email);
@@ -207,4 +204,5 @@ public class UserService {
                     return getMySlotsModel;
                 }).toList();
     }
+
 }

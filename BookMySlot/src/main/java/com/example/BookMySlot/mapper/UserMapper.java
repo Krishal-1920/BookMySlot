@@ -35,4 +35,5 @@ public interface UserMapper {
     UserModel userToUserModel(User user);
 
     User updateUserModel(UserModel userModel,@MappingTarget User existingUser);
+
 }

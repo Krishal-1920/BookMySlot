@@ -18,7 +18,6 @@ public class Role {
     private String roleName;
 
     // Mapping
-
     @OneToMany(mappedBy = "role", cascade = CascadeType.ALL)
     private List<UserRole> userRoles;
 

@@ -32,7 +32,6 @@ public class Slots {
     private Status status;
 
     // Mapping
-
     @ManyToOne
     @JoinColumn(name = "provider_id", nullable = false)
     private User user;
@@ -42,4 +41,5 @@ public class Slots {
 
     @OneToMany(mappedBy = "slot")
     private List<Booking> bookings;
+
 }
