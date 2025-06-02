@@ -6,7 +6,6 @@ import com.example.BookMySlot.model.GetMySlotsModel;
 import com.example.BookMySlot.model.UserModel;
 import com.example.BookMySlot.repository.UserRepository;
 import com.example.BookMySlot.repository.UserRoleRepository;
-import com.example.BookMySlot.service.CustomUserDetailsService;
 import com.example.BookMySlot.service.UserService;
 import com.example.BookMySlot.utils.JwtUtil;
 import lombok.RequiredArgsConstructor;

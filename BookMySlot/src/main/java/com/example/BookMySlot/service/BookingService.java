@@ -95,7 +95,7 @@ public class BookingService {
 
             providers = List.of(user);
         } else {
-            providers = userRepository.findAll();
+            providers = userRepository.findAll(); /// Slotrepo byuseruserId
         }
 
         List<SlotBookingModel> result = new ArrayList<>();
