@@ -1,13 +1,11 @@
 package com.example.BookMySlot.repository;
 
 import com.example.BookMySlot.entity.Slots;
-import com.example.BookMySlot.enums.Status;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Repository
@@ -29,4 +27,5 @@ public interface SlotsRepository extends JpaRepository<Slots, String> {
     List<Slots> findAll();
 
     List<Slots> findByUserUserId(String providerId);
+
 }
