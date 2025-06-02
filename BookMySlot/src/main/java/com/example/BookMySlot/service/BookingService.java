@@ -8,7 +8,6 @@ import com.example.BookMySlot.enums.Status;
 import com.example.BookMySlot.exceptions.DataNotFoundException;
 import com.example.BookMySlot.exceptions.DataValidationException;
 import com.example.BookMySlot.mapper.BookingMapper;
-import com.example.BookMySlot.mapper.SlotsMapper;
 import com.example.BookMySlot.model.BookingModel;
 import com.example.BookMySlot.model.DateAvailableModel;
 import com.example.BookMySlot.model.SlotBookingModel;
@@ -87,29 +86,37 @@ public class BookingService {
 
 
     public List<SlotBookingModel> getAllBookings(String userId) {
-        List<User> providers;
+        List<Slots> slots;
 
         if (userId != null && !userId.isEmpty()) {
-            User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new DataNotFoundException("Provider Not Found"));
-
-            providers = List.of(user);
+            slots = slotsRepository.findByUserUserId(userId);
+            if (slots.isEmpty()) {
+                return new ArrayList<>();
+            }
         } else {
-            providers = userRepository.findAll(); /// Slotrepo byuseruserId
+            slots = slotsRepository.findAll();
+            if (slots.isEmpty()) {
+                return new ArrayList<>();
+            }
         }
+
+        Map<User, List<Slots>> slotsByProvider = slots.stream()
+                .collect(Collectors.groupingBy(Slots -> Slots.getUser()));
 
         List<SlotBookingModel> result = new ArrayList<>();
 
-        for (User provider : providers) {
-            List<Slots> providerSlots = slotsRepository.findByUserUserId(provider.getUserId());
+        for (Map.Entry<User, List<Slots>> entry : slotsByProvider.entrySet()) {
+            User provider = entry.getKey();
+            List<Slots> providerSlots = entry.getValue();
 
+            // Group slots by date
             Map<LocalDate, List<Slots>> slotsByDate = providerSlots.stream()
                     .collect(Collectors.groupingBy(Slots-> Slots.getDate()));
 
             List<DateAvailableModel> dateAvailableModels = slotsByDate.entrySet().stream()
-                    .map(entry -> {
-                        LocalDate date = entry.getKey();
-                        List<Slots> slotsForDate = entry.getValue();
+                    .map(entryDate -> {
+                        LocalDate date = entryDate.getKey();
+                        List<Slots> slotsForDate = entryDate.getValue();
 
                         List<TimeSlotAvailableModel> timeSlotAvailableModels = slotsForDate.stream()
                                 .map(slot -> {
@@ -121,11 +128,10 @@ public class BookingService {
                                 })
                                 .collect(Collectors.toList());
 
-                        DateAvailableModel dateAvailableModel = new DateAvailableModel();
-                        dateAvailableModel.setDate(date);
-                        dateAvailableModel.setTimes(timeSlotAvailableModels);
-
-                        return dateAvailableModel;
+                        DateAvailableModel dateModel = new DateAvailableModel();
+                        dateModel.setDate(date);
+                        dateModel.setTimes(timeSlotAvailableModels);
+                        return dateModel;
                     })
                     .collect(Collectors.toList());
 
@@ -136,7 +142,9 @@ public class BookingService {
 
             result.add(model);
         }
+
         return result;
     }
+
 
 }

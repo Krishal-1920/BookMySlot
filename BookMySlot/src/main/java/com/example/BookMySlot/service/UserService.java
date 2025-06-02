@@ -1,6 +1,8 @@
 package com.example.BookMySlot.service;
 
 import com.example.BookMySlot.entity.*;
+import com.example.BookMySlot.enums.BookingStatus;
+import com.example.BookMySlot.enums.Status;
 import com.example.BookMySlot.exceptions.DataValidationException;
 import com.example.BookMySlot.mapper.RoleMapper;
 import com.example.BookMySlot.mapper.UserMapper;
@@ -192,7 +194,7 @@ public class UserService {
 
         User user = userRepository.findByEmail(email);
 
-        List<Booking> bookings = bookingRepository.findAllByUserUserId(user.getUserId());
+        List<Booking> bookings = bookingRepository.findAllByUserUserIdAndStatus(user.getUserId(), BookingStatus.BOOKED);
 
         return bookings.stream()
                 .map(booking -> {
